@@ -96,8 +96,8 @@
     <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
     <h2>Register for Code Battleground</h2>
     <form method="POST" class="form">
-        <input name="email" type="email" placeholder="Email" required>
-        <input name="password" type="password" placeholder="Password" required>
+        <input name="email" type="email" placeholder="xyz@email.com" autocomplete="off" required>
+        <input name="password" type="password" placeholder="*****" autocomplete="new-password" required>
         <button type="submit" class="button">Register</button>
     </form>
     <p class="note">Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>

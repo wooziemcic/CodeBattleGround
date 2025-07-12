@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request
 from database.models import db, User
 from datetime import datetime,date
+import json
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
@@ -14,20 +15,15 @@ def dashboard():
     if not user:
         return redirect(url_for("auth.login"))
 
-    # Load today’s challenge (for now: hardcoded)
-    challenge = {
-        "question": "What will be the output of this code?",
-        "code": "for i in range(3): print(i)",
-        "options": [
-            "A. 1 2 3",
-            "B. 0 1 2",
-            "C. Error"
-        ],
-        "answer": "B. 0 1 2"  # used later in submission
-    }
+    # Load challenge pool
+    with open("backend/data/daily_challenges.json") as f:
+        all_challenges = json.load(f)
 
-    today = date.today().isoformat()
-    already_attempted = user.last_challenge_date == today
+    # Deterministically pick one challenge per day
+    today_index = hash(date.today().isoformat()) % len(all_challenges)
+    challenge = all_challenges[today_index]
+
+    already_attempted = user.last_challenge_date == date.today().isoformat()
     result = user.last_challenge_result if already_attempted else None
 
     return render_template(
@@ -55,9 +51,14 @@ def submit_challenge():
         return redirect(url_for("dashboard.dashboard"))
 
     selected = request.form.get("answer")
-    challenge_answer = "B. 0 1 2"
 
-    # Clear duplicated activity if needed (safety measure)
+    # Load challenge of the day from JSON
+    with open("backend/data/daily_challenges.json") as f:
+        all_challenges = json.load(f)
+    today_index = hash(today) % len(all_challenges)
+    challenge_answer = all_challenges[today_index]["answer"]
+
+    # Activity safety init
     if user.recent_activity is None:
         user.recent_activity = []
 
@@ -65,13 +66,14 @@ def submit_challenge():
     if selected == challenge_answer:
         user.points += 50
         user.last_challenge_result = "success"
-        user.last_challenge_date = today
         user.add_activity(f"✅ Completed Daily Challenge ({today})")
         user.add_activity("✅ Earned 50 points")
     else:
         user.last_challenge_result = "fail"
-        user.last_challenge_date = today
         user.add_activity(f"❌ Failed Daily Challenge ({today})")
+
+    # Set submission lock
+    user.last_challenge_date = today
 
     db.session.commit()
     return redirect(url_for("dashboard.dashboard"))

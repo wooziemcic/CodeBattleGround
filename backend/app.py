@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from flask import Flask, render_template, session
+from flask import Flask, render_template, session, redirect, url_for
 from database.models import db
 from backend.auth.auth_routes import auth
 from backend.routes.dashboard import dashboard_bp
@@ -22,8 +22,9 @@ app.register_blueprint(dashboard_bp)
 
 @app.route("/")
 def index():
-    user = session.get("user_email")
-    return render_template("index.html", user=user)
+    if "user_email" in session:
+        return redirect(url_for("dashboard.dashboard"))
+    return redirect(url_for("auth.login"))
 
 if __name__ == "__main__":
     with app.app_context():
