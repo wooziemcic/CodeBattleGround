@@ -145,16 +145,24 @@
         <p>{{ challenge.question }}</p>
         <pre>{{ challenge.code }}</pre>
 
-        <form method="POST" action="{{ url_for('dashboard.submit_challenge') }}">
-            <div class="options">
-                {% for option in challenge.options %}
-                    <label>
-                        <input type="radio" name="answer" value="{{ option }}" required> {{ option }}
-                    </label>
-                {% endfor %}
-            </div>
-            <button type="submit" class="logout" style="margin-top: 20px;">Submit Answer</button>
-        </form>
+        {% if already_attempted %}
+            {% if result == "success" %}
+                <p style="color: #00ff99; font-weight: bold; font-size: 1.2rem;">✅ Daily Challenge Completed</p>
+            {% else %}
+                <p style="color: #ff6666; font-weight: bold; font-size: 1.2rem;">❌ Daily Challenge Failed</p>
+            {% endif %}
+        {% else %}
+            <form method="POST" action="{{ url_for('dashboard.submit_challenge') }}">
+                <div class="options">
+                    {% for option in challenge.options %}
+                        <label>
+                            <input type="radio" name="answer" value="{{ option }}" required> {{ option }}
+                        </label>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="logout" style="margin-top: 20px;">Submit Answer</button>
+            </form>
+        {% endif %}
     </div>
 
     <!-- Right: User Info -->
@@ -163,7 +171,7 @@
         <h3>📜 Recent Activity</h3>
         <ul class="activity-log">
             {% for item in user.recent_activity %}
-                <li>✅ {{ item }}</li>
+                <li> {{ item }}</li>
             {% else %}
                 <li>No recent activity yet.</li>
             {% endfor %}

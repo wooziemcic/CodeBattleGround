@@ -10,7 +10,10 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     
     points = db.Column(db.Integer, default=0)
-    recent_activity = db.Column(db.PickleType, default=list)  # stores a list of strings
+    recent_activity = db.Column(db.PickleType, default=list)
+
+    last_challenge_date = db.Column(db.String(50), nullable=True)  # stores YYYY-MM-DD
+    last_challenge_result = db.Column(db.String(20), nullable=True)  # "success", "fail"
 
     def add_activity(self, activity):
         """Append a new activity (max 3 recent kept)"""
