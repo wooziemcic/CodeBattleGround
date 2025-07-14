@@ -6,6 +6,8 @@ from flask import Flask, render_template, session, redirect, url_for
 from database.models import db
 from backend.auth.auth_routes import auth
 from backend.routes.dashboard import dashboard_bp
+from backend.routes.story_mode import story_bp
+
 
 app = Flask(__name__,
             template_folder="../frontend/templates",
@@ -16,8 +18,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
+app.register_blueprint(story_bp)
 app.register_blueprint(auth)
-
 app.register_blueprint(dashboard_bp)
 
 @app.route("/")

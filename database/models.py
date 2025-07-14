@@ -15,6 +15,8 @@ class User(db.Model):
     last_challenge_date = db.Column(db.String(50), nullable=True)  # stores YYYY-MM-DD
     last_challenge_result = db.Column(db.String(20), nullable=True)  # "success", "fail"
 
+    story_progress = db.Column(db.PickleType, default=dict)
+
     def add_activity(self, activity):
         """Append a new activity (max 3 recent kept)"""
         if self.recent_activity is None:

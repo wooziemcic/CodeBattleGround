@@ -1,0 +1,32 @@
+{
+  "DA": {
+    "track_name": "The Data Requiem",
+    "description": "The gods buried the truth of the Titanic deep in the seas. Only a data sorcerer can revive its secrets and unlock the prophecy of fate.",
+    "levels": [
+      {
+        "id": 1,
+        "title": "Scribe of the Lost",
+        "story": "In the scrolls of the Titanic, only the purest survived. Unearth the group blessed most by the gods.",
+        "starter_code": "import pandas as pd\n\n# Load the dataset\ndf = pd.read_csv('backend/data/datasets/titanic.csv')\n\n# Group by 'Sex' and 'Pclass' and find which group had the highest survival rate\n# Print the tuple of (Sex, Pclass) with the highest rate",
+        "expected_output": "('female', 1)",
+        "difficulty": "hard"
+      },
+      {
+        "id": 2,
+        "title": "The Outliers’ Whisper",
+        "story": "Hidden among the cabins are outliers — anomalies that carry the weight of fate. Which deck holds the most variance in wealth?",
+        "starter_code": "import pandas as pd\n\n# Load the dataset\ndf = pd.read_csv('backend/data/datasets/titanic.csv')\n\n# Extract Deck from Cabin and find which Deck has the highest fare variance\n# Print the deck letter (e.g., 'C')",
+        "expected_output": "C",
+        "difficulty": "harder"
+      },
+      {
+        "id": 3,
+        "title": "The Prophet’s Regression",
+        "story": "The gods seek prophecy. Build a model that explains how fate (fare) correlates with age and status.",
+        "starter_code": "import pandas as pd\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.metrics import r2_score\n\n# Load the dataset\ndf = pd.read_csv('backend/data/datasets/titanic.csv')\n\n# Prepare features and target\ndf = df.dropna(subset=['Age', 'Fare'])\nX = df[['Age', 'Pclass', 'SibSp']]\ny = df['Fare']\n\n# Fit and evaluate regression\nX_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)\nmodel = LinearRegression().fit(X_train, y_train)\nscore = r2_score(y_test, model.predict(X_test))\n\n# Print rounded R² score to 2 decimal places",
+        "expected_output": ">= 0.3",
+        "difficulty": "hardest"
+      }
+    ]
+  }
+}
