@@ -7,7 +7,7 @@ from database.models import db
 from backend.auth.auth_routes import auth
 from backend.routes.dashboard import dashboard_bp
 from backend.routes.story_mode import story_bp
-
+from backend.one_v_one.routes import one_v_one_bp
 
 app = Flask(__name__,
             template_folder="../frontend/templates",
@@ -21,6 +21,7 @@ db.init_app(app)
 app.register_blueprint(story_bp)
 app.register_blueprint(auth)
 app.register_blueprint(dashboard_bp)
+app.register_blueprint(one_v_one_bp)
 
 @app.route("/")
 def index():

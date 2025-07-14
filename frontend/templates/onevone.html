@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>1v1 Challenge | Code Battleground</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0d0d0d;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: #121212;
+        }
+
+        .logo {
+            height: 45px;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .xp-display {
+            font-size: 1rem;
+            color: #00ffff;
+        }
+
+        .arena {
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hp-bars {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .hp-bar {
+            background-color: #222;
+            border: 2px solid #00ffff;
+            width: 40%;
+            height: 30px;
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .hp-fill {
+            height: 100%;
+            background-color: #00ff99;
+            transition: width 0.5s ease-in-out;
+            border-radius: 6px;
+        }
+
+        .hp-label {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .challenge-box {
+            background-color: #1a1a1a;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .code-area textarea {
+            width: 100%;
+            height: 180px;
+            font-family: monospace;
+            background-color: #121212;
+            color: #00ffff;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .submit-btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #00ffff;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            color: #00ffff;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+    <a href="{{ url_for('dashboard.dashboard') }}">
+        <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="Logo">
+    </a>
+    <h2 style="color:#00ffff;">1v1 Challenge</h2>
+    <div class="xp-display">
+        XP: {{ user.points }} |
+        <a href="{{ url_for('auth.logout') }}" style="color:#00ffff;">Logout</a>
+    </div>
+</div>
+
+<!-- Arena -->
+<div class="arena">
+
+    <div class="hp-bars">
+        <div>
+            <div class="hp-bar">
+                <div class="hp-fill" style="width: {{ player_hp_percent }}%;"></div>
+            </div>
+            <div class="hp-label">👤 You: {{ match['player_points'] }} HP</div>
+        </div>
+        <div>
+            <div class="hp-bar">
+                <div class="hp-fill" style="width: {{ opponent_hp_percent }}%;"></div>
+            </div>
+            <div class="hp-label">🤖 Opponent: {{ match['opponent_points'] }} HP</div>
+        </div>
+    </div>
+
+    <div class="challenge-box">
+        <h3>🧠 Round {{ match['round'] }}</h3>
+        <pre>{{ challenge.question }}</pre>
+
+        <form method="POST" action="{{ url_for('onevone.submit_round') }}">
+            <div class="code-area">
+                <textarea name="code_input" required></textarea>
+            </div>
+            <button class="submit-btn" type="submit">Submit Code</button>
+        </form>
+        <!-- Hidden auto-skip form -->
+        <form id="timeoutForm" method="POST" action="{{ url_for('onevone.timeout_round') }}">
+            <input type="hidden" name="timeout" value="true">
+        </form>
+        {% if result_message %}
+            <div class="result-box">{{ result_message }}</div>
+        {% endif %}
+
+        <div class="timer" id="timer">⏱ Time Remaining: 2:00</div>
+    </div>
+</div>
+    <script>
+        let timeLeft = 120;  // 2 minutes in seconds
+        const timerDisplay = document.getElementById("timer");
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `⏱ Time Remaining: ${minutes}:${seconds.toString().padStart(2, "0")}`;
+            
+            if (timeLeft <= 0) {
+                document.getElementById("timeoutForm").submit();
+            } else {
+                timeLeft--;
+                setTimeout(updateTimer, 1000);
+            }
+        }
+
+        updateTimer();
+    </script>
+</body>
+</html>
